@@ -24,7 +24,6 @@
     "test": "cross-env BABEL_ENV=test karma start test/karma.conf.js --single-run",
     "dev": "webpack-dashboard -- webpack-dev-server --config build/webpack.config.dev.js --open",
     "dev:coverage": "cross-env BABEL_ENV=test karma start test/karma.conf.js",
-    "prepublish": "yon run build",
     "deploy": "surge --domain keynote.surge.sh ./examples/dist",
     "predeploy": "yarn run build && yarn run example",
     "example": "vue build --dist examples/dist/ --prod examples/index.js"
@@ -141,6 +140,8 @@
   "license": "MIT",
   "dependencies": {
     "marked": "^0.3.6",
-    "prismjs": "^1.6.0"
+    "prismjs": "^1.6.0",
+    "vue-animate": "^0.0.4",
+    "vue-touch": "^1.1.0"
   }
 }

@@ -1,27 +1,34 @@
 <template lang="html">
-<div class="slide-wrapper">
-  <div class="slide slide-end">
+<div :class="$style.slide">
     End of Keynote! <br>
     <small>
       <small>Built with Vue + <a href="https://github.com/znck/vue-keynote" style="color: white">Keynote</a></small>
     </small>
   </div>
-</div>
 </template>
 
 <script lang="babel">
 export default {
-  name: 'End',
+  name: 'EndSlide'
 }
 </script>
 
 
-<style lang="scss">
-.slide.slide-end {
-  background-color: black;
-  color: white;
-  text-align: center;
+<style module>
+.slide {
+  font-family: Arial, Helvetica, sans-serif;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  background-color: black;
+  color: white;
+
+  text-align: center;
 }
 </style>
