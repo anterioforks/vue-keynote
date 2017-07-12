@@ -1,16 +1,19 @@
 <script>
 import BrokenSlide from '../components/BrokenSlide.vue'
 import EndSlide from '../components/EndSlide.vue'
+import StartSlide from '../components/StartSlide.vue'
 import transition, { filterSlides } from './transition'
 
 const FORWARD = 1
 const BACKWARD = 2
 
+let id = 0
+
 export default {
   name: 'Presenter',
 
   data: () => ({
-    _index: 0,
+    _index: -1,
     _lastIndex: -1,
     _total: null,
     _endOfPresentation: false,
@@ -52,12 +55,18 @@ export default {
 
   render (h) {
     const render = (...any) => h('div', {
-      class: [this.$style.presenter]
+      class: 'vue-keynote-container vue-keynote-presenter'
     }, any)
 
     // --> Populate config on first render.
     if (this.isInitialRender) {
       this.init()
+
+      return
+    }
+
+    if (this.index === -1) {
+      return render(h(StartSlide))
     }
 
     // --> Reached end of presentation.
@@ -72,8 +81,9 @@ export default {
     if (!current) {
       return render(h(BrokenSlide))
     }
+    const last = slides[this.lastIndex]
 
-    return render(transition(h, current))
+    return render(h(transition, { props: { jump: this.lastIndex >= this.index, index: this.index } }, slides))
   },
 
   created () {
@@ -84,16 +94,17 @@ export default {
     this.$on('home', this.onHome)
     this.$on('fullscreen', this.onFullscreen)
     this.$on('pause', this.onPause)
+    this.$on('go', this.onGo)
   },
 
   methods: {
     onNext () {
-      this.index = this.index + 1
       this.direction = FORWARD
+      this.index = this.index + 1
     },
     onPrev () {
-      this.index = this.index - 1
       this.direction = BACKWARD
+      this.index = this.index - 1
     },
     onStep (delta) {
       if (delta > 0) this.onNext()
@@ -103,39 +114,31 @@ export default {
       this.index = this.total
     },
     onHome () {
-      this.index = 0
+      this.index = -1
     },
     onPause () {
       // TODO: In next version.
     },
+    onGo (index) {
+      this.index = index
+    },
     init () {
-      this.$data._total = Array.isArray(this.$slots.default) ? filterSlides(this.$slots.default).length : (this.$slots.default ? 1 : 0)
+      console.debug('Initializing presenter.')
+      const slides = filterSlides(this.$slots.default || [])
+      this.$data._total = slides.length
       this.$data._initialRender = false
+      slides.forEach(slide => {
+        if (!slide.data) slide.data = {}
+        if (!slide.data.attrs) slide.data.attrs = {}
+        slide.data.attrs['data-index'] = id++
+      })
     }
   }
 }
 </script>
 
-<style src="vue-animate/dist/vue-animate.min.css"/>
-
-<style module>
-.presenter {
-  width: 100%;
-  height: 100%;
-}
-</style>
-
 <style>
-.slide-fade-enter-active {
-  transition: all .3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active for <2.1.8 */ {
-  transform: translateX(10px);
-  opacity: 0;
+.vue-keynote-presenter {
+  position: relative;
 }
 </style>
-

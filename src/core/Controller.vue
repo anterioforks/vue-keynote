@@ -1,5 +1,5 @@
 <template>
-<div :class="$style.controller"
+<div class="vue-keynote-controller vue-keynote-container"
      @keyup.up="goNext"
      @keyup.right="goNext"
      @keyup.75="goNext"
@@ -11,6 +11,8 @@
      @keyup.65="goPrev"
 
      @keyup.70="enterFullscreen"
+
+     @keypress="onKeypress"
 
      @keyup.esc="exitFullscreen"
 
@@ -24,7 +26,7 @@
      @focus="onFocus"
 
      tabindex="0" autofocus>
-  <Touch :class="$style.touch"
+  <Touch class="vue-keynote-touch vue-keynote-container"
 
          @pinchout="enterFullscreen"
          @pinchin="exitFullscreen"
@@ -53,7 +55,9 @@ import Presenter from './Presenter.vue'
 export default {
   name: 'Controller',
 
-  props: {},
+  data: () => ({
+    index: -1
+  }),
 
   methods: {
     debug (e) {
@@ -113,6 +117,21 @@ export default {
 
     onFocus () {
       console.log('Keyboard controls active.')
+    },
+
+    onKeypress (e) {
+      if (!/^digit/i.test(e.code)) return true
+
+      if (this.index < 0) this.index = Number(e.key)
+      else this.index = this.index * 10 + Number(e.key)
+
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => this.go(), 400)
+    },
+
+    go () {
+      this.emit('go', this.index)
+      this.index = -1
     }
   },
 
@@ -124,10 +143,8 @@ export default {
 }
 </script>
 
-<style module>
-.controller, .touch {
-  width: 100%;
-  height: 100%;
+<style>
+.vue-keynote-controller, .vue-keynote-touch {
   overflow: hidden;
   outline: none;
 }
