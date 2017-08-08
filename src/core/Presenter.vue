@@ -1,144 +1,100 @@
+
+
 <script>
-import BrokenSlide from '../components/BrokenSlide.vue'
-import EndSlide from '../components/EndSlide.vue'
-import StartSlide from '../components/StartSlide.vue'
-import transition, { filterSlides } from './transition'
-
-const FORWARD = 1
-const BACKWARD = 2
-
-let id = 0
+import { mapGetters } from 'vuex'
+import Canvas from './Canvas.vue'
+import Controller from './Controller.vue'
 
 export default {
-  name: 'Presenter',
-
-  data: () => ({
-    _index: -1,
-    _lastIndex: -1,
-    _total: null,
-    _endOfPresentation: false,
-    direction: FORWARD,
-    _initialRender: true
-  }),
-
-  computed: {
-    isInitialRender () {
-      return this.$data._initialRender
-    },
-
-    index: {
-      get () {
-        return this.$data._index
-      },
-
-      set (index) {
-        index = Math.min(this.total, Math.max(0, index))
-
-        this.$data._lastIndex = this.$data._index
-        this.$data._index = index
-        this.$data._endOfPresentation = index >= this.total
-      }
-    },
-
-    lastIndex () {
-      return this.$data._lastIndex
-    },
-
-    total () {
-      return this.$data._total
-    },
-
-    endOfPresentation () {
-      return this.$data._endOfPresentation
-    }
-  },
-
+  computed: mapGetters(['total', 'index', 'lastIndex', 'isFirstSlide', 'isLastSlide', 'presenter']),
   render (h) {
-    const render = (...any) => h('div', {
-      class: 'vue-keynote-container vue-keynote-presenter'
-    }, any)
-
-    // --> Populate config on first render.
-    if (this.isInitialRender) {
-      this.init()
-
-      return
+    const props = {
+      view: '16by9',
+      index: this.index,
+      lastIndex: this.lastIndex,
+      isFirstSlide: this.isFirstSlide,
+      isLastSlide: this.isLastSlide
     }
 
-    if (this.index === -1) {
-      return render(h(StartSlide))
+    const nextProps = {
+      view: '16by9',
+      index: this.index + 1,
+      lastIndex: this.index,
+      isFirstSlide: false,
+      isLastSlide: this.index + 1 === this.total
     }
 
-    // --> Reached end of presentation.
-    if (this.endOfPresentation) {
-      return render(h(EndSlide))
-    }
-
-    const slides = filterSlides(this.$slots.default)
-
-    // --> Find current view.
-    const current = slides[this.index]
-    if (!current) {
-      return render(h(BrokenSlide))
-    }
-    const last = slides[this.lastIndex]
-
-    return render(h(transition, { props: { jump: this.lastIndex >= this.index, index: this.index } }, slides))
-  },
-
-  created () {
-    this.$on('next', this.onNext)
-    this.$on('prev', this.onPrev)
-    this.$on('step', this.onStep)
-    this.$on('end', this.onEnd)
-    this.$on('home', this.onHome)
-    this.$on('fullscreen', this.onFullscreen)
-    this.$on('pause', this.onPause)
-    this.$on('go', this.onGo)
-  },
-
-  methods: {
-    onNext () {
-      this.direction = FORWARD
-      this.index = this.index + 1
-    },
-    onPrev () {
-      this.direction = BACKWARD
-      this.index = this.index - 1
-    },
-    onStep (delta) {
-      if (delta > 0) this.onNext()
-      else if (delta < 0) this.onPrev()
-    },
-    onEnd () {
-      this.index = this.total
-    },
-    onHome () {
-      this.index = -1
-    },
-    onPause () {
-      // TODO: In next version.
-    },
-    onGo (index) {
-      this.index = index
-    },
-    init () {
-      console.debug('Initializing presenter.')
-      const slides = filterSlides(this.$slots.default || [])
-      this.$data._total = slides.length
-      this.$data._initialRender = false
-      slides.forEach(slide => {
-        if (!slide.data) slide.data = {}
-        if (!slide.data.attrs) slide.data.attrs = {}
-        slide.data.attrs['data-index'] = id++
-      })
-    }
+    return h('div', { class: this.$style.presenter }, [
+      h('div', { class: this.$style.top }, [
+        h('div', { class: this.$style.main }, [
+          h('div', { class: this.$style.current }, [
+            h(Controller, {}, [
+              h(Canvas, { props }, this.$slots.default)
+            ])
+          ]),
+        ]),
+        h('div', { class: this.$style.right }, [
+          h('div', { class: this.$style.next }, [
+            h(Canvas, { props: nextProps }, this.$slots.default)
+          ]),
+          h('div', { class: this.$style.description }, [
+            this.index + 1 >= this.total ? 'Fin.' : 'Next Slide'
+          ])
+        ])
+      ]),
+      h('div', { class: this.$style.bottom }, [
+        h('h1', this.presenter.notes[this.index])
+      ])
+    ])
   }
 }
 </script>
 
-<style>
-.vue-keynote-presenter {
-  position: relative;
+<style lang="scss" module>
+.presenter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.top {
+  flex: 3;
+  display: flex;
+  flex-basis: row;
+  padding: 5px;
+
+  > * {
+    margin: 5px;
+  }
+  .main {
+    flex: 5;
+  }
+
+  .right {
+    flex: 4;
+    display: flex;
+    flex-direction: column;
+
+    .description {
+      flex: 1;
+      font-size: 14px
+    }
+  }
+
+  .current {
+    overflow: hidden;
+    font-size: .8em
+  }
+
+  .next {
+    overflow: hidden;
+    font-size: .2em
+  }
+}
+
+.bottom {
+  flex: 1
 }
 </style>
+

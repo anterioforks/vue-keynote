@@ -1,5 +1,5 @@
 <template>
-<div class="vue-keynote-controller vue-keynote-container"
+<div :class="$style.controller"
      @keyup.up="goNext"
      @keyup.right="goNext"
      @keyup.75="goNext"
@@ -9,6 +9,8 @@
      @keyup.left="goPrev"
      @keyup.74="goPrev"
      @keyup.65="goPrev"
+
+     @keyup.80="togglePresenterView"
 
      @keyup.70="enterFullscreen"
 
@@ -26,7 +28,7 @@
      @focus="onFocus"
 
      tabindex="0" autofocus>
-  <Touch class="vue-keynote-touch vue-keynote-container"
+  <Touch :class="$style.touch"
 
          @pinchout="enterFullscreen"
          @pinchin="exitFullscreen"
@@ -38,31 +40,34 @@
             swipe: ['pinch'],
             pinch: ['swipe']
           }">
-    <Presenter ref="target">
-      <slot></slot>
-    </Presenter>
+        <slot/>
   </Touch>
 </div>
 </template>
 
 
 <script>
-import Vue from 'vue'
+import { mapActions, mapGetters } from 'vuex'
 import { Component as Touch } from 'vue-touch'
 
-import Presenter from './Presenter.vue'
+import intercom from '../intercom'
+
+const SYNC = 'keynote.controller:sync'
 
 export default {
   name: 'Controller',
 
   data: () => ({
-    index: -1
+    indexKey: -1
   }),
 
+  computed: mapGetters(['isPresenterViewEnabled']),
+
   methods: {
-    debug (e) {
-      console.log(e)
+    togglePresenterView () {
+      this.present({ enabled: !this.isPresenterViewEnabled })
     },
+
     enterFullscreen () {
       this.fullscreen()
     },
@@ -72,7 +77,6 @@ export default {
     },
 
     fullscreen (go = true) {
-      console.log('Fullscreen', go)
       const element = this.$el
       const requestMethod = go ? (
         element.requestFullscreen ||
@@ -92,23 +96,23 @@ export default {
     },
 
     goNext () {
-      this.emit('next')
+      this.move({ delta: 1 })
+      this.doSync()
     },
 
     goPrev () {
-      this.emit('prev')
+      this.move({ delta: -1 })
+      this.doSync()
     },
 
     stepNext (e) {
-      this.emit('step', 1)
+      this.step({ delta: 1 })
+      this.doSync()
     },
 
     stepPrev () {
-      this.emit('step', -1)
-    },
-
-    emit (event, payload) {
-      this.$refs.target.$emit(event, payload)
+      this.step({ delta: -1 })
+      this.doSync()
     },
 
     onBlur () {
@@ -122,31 +126,47 @@ export default {
     onKeypress (e) {
       if (!/^digit/i.test(e.code)) return true
 
-      if (this.index < 0) this.index = Number(e.key)
-      else this.index = this.index * 10 + Number(e.key)
+      if (this.indexKey < 0) this.indexKey = Number(e.key)
+      else this.indexKey = this.indexKey * 10 + Number(e.key)
 
       clearTimeout(this.timer)
       this.timer = setTimeout(() => this.go(), 400)
     },
 
     go () {
-      this.emit('go', this.index)
-      this.index = -1
-    }
+      this.jump({ index: this.indexKey })
+      this.doSync()
+      this.indexKey = -1
+    },
+
+    doSync () {
+      this.isPresenterViewEnabled && intercom.emit(SYNC, this.$store.state.control)
+    },
+
+    ...mapActions(['jump', 'move', 'step', 'sync', 'present'])
+  },
+
+  created () {
+    intercom.on(SYNC, this.sync)
+  },
+
+  beforeDestroy () {
+    intercom.off(SYNC, this.sync)
   },
 
   mounted () {
     this.$nextTick(() => this.$el.focus())
   },
 
-  components: { Presenter, Touch }
+  components: { Touch }
 }
 </script>
 
-<style>
-.vue-keynote-controller, .vue-keynote-touch {
+<style module>
+.controller, .touch {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   outline: none;
 }
 </style>
-

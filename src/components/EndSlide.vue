@@ -1,5 +1,5 @@
 <template lang="html">
-<div :class="$style.slide">
+<div class="vue-keynote-slide">
     End of Keynote! <br>
     <small>
       <small>Built with Vue + <a href="https://github.com/znck/vue-keynote" style="color: white">Keynote</a></small>
@@ -14,8 +14,8 @@ export default {
 </script>
 
 
-<style module>
-.slide {
+<style>
+.vue-keynote-slide {
   font-family: Arial, Helvetica, sans-serif;
 
   width: 100%;

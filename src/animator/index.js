@@ -1,21 +1,21 @@
-import { find, inverse } from './animations'
+import push from './push'
+import reveal from './reveal'
+import drop from './drop'
 
-const findEnter = options => find(options.animationEnter || options.animation || 'none')
-const findLeave = options => find(options.animationLeave || inverse(options.animation || 'none'))
+const transitions = { push, reveal, drop }
 
-export default (h, slide, { entering, active, backwards }) => {
-  console.log('Rerendering!')
+function call (fn, ...args) {
+  return typeof (fn) === 'function' ? fn(...args) || {} : {}
+}
 
-  const options = slide.componentOptions.propsData
+export function findEnterTransition (options) {
+  const { name, enter } = options
 
-  const props = entering
-      ? (backwards ? findLeave(options) : findEnter(options))
-      : (backwards ? findEnter(options) : findLeave(options))
+  return call(transitions[enter || name || 'push'], options)
+}
 
-  const wrapperOptions = {
-    'class': { 'slide-wrapper': true },
-    directives: [{ name: 'show', value: active }]
-  }
+export function findLeaveTransition (options) {
+  const { name, leave } = options
 
-  return h('transition', { props }, [h('div', wrapperOptions, [slide])])
+  return call(transitions[leave || name || 'push'], options)
 }

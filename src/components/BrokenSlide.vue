@@ -1,5 +1,5 @@
 <template>
   <div>
-    !! Broken Slideshow.
+    !! Broken Slide.
   </div>
 </template>

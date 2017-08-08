@@ -1,16 +1,22 @@
 <script>
 export default {
   name: 'SlideContainer',
+  props: {
+    index: {
+      type: Number,
+      required: true
+    }
+  },
   render (h) {
     return h('div', {
-      class: 'vue-keynote-slide-container',
+      class: this.$style.slide,
     }, this.$slots.default)
   }
 }
 </script>
 
-<style>
-.vue-keynote-slide-container {
+<style lang="scss" module>
+.slide {
   width: 100%;
   height: 100%;
 
@@ -23,6 +29,13 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+
+  background: white;
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
 
