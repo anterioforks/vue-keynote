@@ -4,6 +4,7 @@
 import { mapGetters } from 'vuex'
 import Canvas from './Canvas.vue'
 import Controller from './Controller.vue'
+import Dashboard from '../components/PresenterDashboard.vue'
 
 export default {
   computed: mapGetters(['total', 'index', 'lastIndex', 'isFirstSlide', 'isLastSlide', 'presenter']),
@@ -24,77 +25,49 @@ export default {
       isLastSlide: this.index + 1 === this.total
     }
 
-    return h('div', { class: this.$style.presenter }, [
-      h('div', { class: this.$style.top }, [
-        h('div', { class: this.$style.main }, [
-          h('div', { class: this.$style.current }, [
-            h(Controller, {}, [
-              h(Canvas, { props }, this.$slots.default)
-            ])
-          ]),
-        ]),
-        h('div', { class: this.$style.right }, [
-          h('div', { class: this.$style.next }, [
-            h(Canvas, { props: nextProps }, this.$slots.default)
-          ]),
-          h('div', { class: this.$style.description }, [
-            this.index + 1 >= this.total ? 'Fin.' : 'Next Slide'
+    const slots = {
+        notes: [this.presenter.notes[this.index]],
+        current: [
+          h(Controller, {}, [
+            h(Canvas, { props }, this.$slots.default)
           ])
-        ])
-      ]),
-      h('div', { class: this.$style.bottom }, [
-        h('h1', this.presenter.notes[this.index])
-      ])
-    ])
+        ],
+        currentMessage: [h('div', { class: 'vue-keynote-slide-number' }, `Slide ${props.index} of ${this.total}`)],
+        next: [
+          h(Controller, {}, [
+            h(Canvas, { props: nextProps }, this.$slots.default),
+          ])
+        ],
+        nextMessage: [h('div', { class: 'vue-keynote-slide-number' }, `Slide ${nextProps.index} of ${this.total}`)],
+        navigator: this.$slots.default.map(
+          v => h('div', { class: 'vue-keynote-navigator-preview' }, [v])
+        )
+    }
+
+    return h(Dashboard, {}, Object.keys(slots).map(
+      slot => h('template', { slot }, slots[slot])
+    ))
   }
 }
 </script>
 
-<style lang="scss" module>
-.presenter {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-}
+<style lang="scss">
+@import '../style.scss';
 
-.top {
-  flex: 3;
-  display: flex;
-  flex-basis: row;
+.vue-keynote-navigator-preview {
+  @include aspect-ratio(16, 9);
+  position: relative;
+  > div {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+}
+.vue-keynote-slide-number {
+  text-align: center;
+  font-family: Helvetica, sans-serif;
+  font-size: 18px;
   padding: 5px;
-
-  > * {
-    margin: 5px;
-  }
-  .main {
-    flex: 5;
-  }
-
-  .right {
-    flex: 4;
-    display: flex;
-    flex-direction: column;
-
-    .description {
-      flex: 1;
-      font-size: 14px
-    }
-  }
-
-  .current {
-    overflow: hidden;
-    font-size: .8em
-  }
-
-  .next {
-    overflow: hidden;
-    font-size: .2em
-  }
-}
-
-.bottom {
-  flex: 1
 }
 </style>
 
