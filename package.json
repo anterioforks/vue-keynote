@@ -1,6 +1,6 @@
 {
   "name": "vue-keynote",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "scripts": {
     "build": "vue-cli-service build",
     "test": "vue-cli-service test",
