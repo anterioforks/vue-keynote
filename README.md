@@ -1,5 +1,5 @@
 <div class="text-xs-center" align="center" style="margin: 20px">
-  <img src="./docs/assets/opengraph.png" height="300">
+  <img src="https://github.com/znck/vue-keynote/raw/master/docs/assets/opengraph.png" height="300">
 </div>
 
 <div class="text-xs-center" align="center">
