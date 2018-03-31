@@ -2,11 +2,14 @@ import * as core from './core'
 import * as components from './components'
 import * as transitions from './transitions'
 
+import DefaultTheme from './themes/default'
+
 let Vue
 const themes = {}
-export default {
+const Keynote = {
   install(context) {
     Vue = context
+    Keynote.use(DefaultTheme)
 
     Vue.mixin({
       created() {
@@ -37,4 +40,8 @@ export default {
       }
     })
   }
+}
+
+if (typeof window !== 'undefined' && 'Vue' in window) {
+  window.Vue.use(Keynote)
 }
