@@ -1,9 +1,15 @@
+import Slide from './Slide.vue'
+import AuthorSlide from './AuthorSlide.vue'
+import PhotoSlide from './PhotoSlide.vue'
+import PhotoTitleSlide from './PhotoTitleSlide.vue'
+import TitleSlide from './TitleSlide.vue'
+
 export default function Default(Keynote) {
   Keynote.slides({
-    Slide: () => import('./Slide.vue'),
-    AuthorSlide: () => import('./AuthorSlide.vue'),
-    PhotoSlide: () => import('./PhotoSlide.vue'),
-    PhotoTitleSlide: () => import('./PhotoTitleSlide.vue'),
-    TitleSlide: () => import('./TitleSlide.vue')
+    Slide,
+    AuthorSlide,
+    PhotoTitleSlide,
+    PhotoTitleSlide,
+    TitleSlide
   })
 }
