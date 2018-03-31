@@ -49,5 +49,9 @@
   "prettier": {
     "semi": false,
     "singleQuote": true
-  }
+  },
+  "main": "dist/vue-keynote.cjs.js",
+  "module": "dist/vue-keynote.es.js",
+  "unpkg": "dist/vue-keynote.js",
+  "browser": "dist/vue-keynote.js"
 }
