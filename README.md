@@ -35,6 +35,8 @@ npm run build
 
 ### Transitions
 
+#### Appear & Move
+
 - [ ] Clothesline
 - [ ] Confetti
 - [x] Dissolve
@@ -47,6 +49,8 @@ npm run build
 - [x] Reveal
 - [x] Switch
 - [ ] Wipe
+
+#### Flip, Spin & Scale
 
 - [ ] Blinds
 - [ ] Color Planes
