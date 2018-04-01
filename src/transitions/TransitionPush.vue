@@ -21,7 +21,7 @@ export default {
       'right-to-left',
       'top-to-bottom',
       'bottom-to-top'
-    ).value('left-to-right'),
+    ).value('right-to-left'),
     duration: PropTypes.number.value(500)
   },
   computed: {

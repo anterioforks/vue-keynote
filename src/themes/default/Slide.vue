@@ -12,7 +12,6 @@ export default {}
 .slide {
   display: flex;
   flex-direction: column;
-  height: 100vh;
   padding: 0 2rem;
   background-color: white;
 

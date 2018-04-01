@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Vue Keynote</title>
+  <link rel="stylesheet" href="../dist/vue-keynote.css">
+</head>
+<body>
+  <script src="//unpkg.com/vue"></script>
+  <script src="../dist/vue-keynote.umd.js"></script>
+  <div id="app">
+    <keynote theme="default">
+      <author-slide transition="push" name="Rahul Kadyan" photo="https://github.com/znck.png">Creator of Vue Keynote</author-slide>
+      <title-slide  transition="push" title="Vue.js">The Progressive Framework</title-slide>
+    </keynote>
+  </div>
+  <script>
+    new Vue({ el: '#app' })
+  </script>
+</body>
+</html>

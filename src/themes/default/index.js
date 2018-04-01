@@ -8,7 +8,7 @@ export default function Default(Keynote) {
   Keynote.slides({
     Slide,
     AuthorSlide,
-    PhotoTitleSlide,
+    PhotoSlide,
     PhotoTitleSlide,
     TitleSlide
   })

@@ -7,7 +7,7 @@
     </AuthorSlide>
 
     <TitleSlide 
-      transition="twirl"
+      transition="dissolve"
       name="slide 2" title="A Bold Title">
       A little description about it.
       <CodePreview language="javascript">{{`
@@ -17,7 +17,7 @@
       `}}</CodePreview>
     </TitleSlide>
 
-    <PhotoTitleSlide transition="dissolve" name="slide 3" photo="https://unsplash.it/1200/800?random=1" title="An unsplash photo">
+    <PhotoTitleSlide transition="push" name="slide 3" photo="https://unsplash.it/1200/800?random=1" title="An unsplash photo">
       There is a random unsplash photo at top.
     </PhotoTitleSlide>
 

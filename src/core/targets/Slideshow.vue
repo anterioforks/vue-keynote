@@ -3,10 +3,9 @@
     <component 
       v-if="keynote.activeSlide" 
       v-bind="transition"
-        :is="transition.component || 'transition-noop'"
-        key="transition"
-        @entered="onEnter"
-        @exited="onExit"
+        :is="transition.component" key="transition"
+        @before-leave="beforeExit"
+        @after-leave="afterExit"
     >
       <Vnode :vnode="keynote.activeSlide.vnode" :key="keynote.activeSlide.index"/>
     </component>
@@ -17,33 +16,41 @@
 </template>
 
 <script>
-import { getRealChild } from '../../core/Manager/helpers'
-
 export default {
   name: 'Slideshow',
   inject: ['keynote'],
-  computed: {
-    transition() {
-      this.entering //
-      this.keynote.activeSlide //
-      this.keynote.prevSlide //
 
+  data: () => ({
+    leaving: true
+  }),
+
+  computed: {
+    prevTransition() {
+      if (this.keynote.prevSlide) {
+        return this.keynote.prevSlide.transition
+      }
+
+      return { component: 'transition-noop' }
+    },
+    transition() {
       if (this.keynote.activeSlide) {
         return this.keynote.activeSlide.transition
       }
 
-      return {}
+      return { component: 'transition-noop' }
     }
   },
   methods: {
     clone(any) {
       return { ...any }
     },
-    onEnter(event) {
-      console.log('ENTER', getRealChild(event), this.keynote.activeSlide)
+    beforeExit(event) {
+      this.leaving = true
+      console.log('> ENTERED', event)
     },
-    onExit(event) {
-      console.log('EXIT', getRealChild(event), this.keynote.activeSlide)
+    afterExit(event) {
+      this.leaving = false
+      console.log('> EXITED', event)
     }
   },
   components: {
@@ -53,6 +60,12 @@ export default {
         return h('div', {}, this.$slots.default)
       }
     }
+  },
+  watch: {
+    transition: {
+      handler: any => console.log(any),
+      immediate: true
+    }
   }
 }
 </script>
@@ -61,6 +74,7 @@ export default {
 .slideshow {
   width: 100%;
   height: 100%;
+  height: 100vh;
   position: relative;
   perspective: 400vw;
 }
@@ -69,9 +83,11 @@ export default {
   position: absolute;
 
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
+
+  height: 100%;
+  width: 100%;
+
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
 }
 </style>

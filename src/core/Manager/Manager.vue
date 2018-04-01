@@ -21,7 +21,6 @@ const defineReactive = (target, key, get) => {
 
 export default {
   name: 'Manager',
-  abstract: process.env.NODE_ENV === 'production',
   props: {
     autoplay: {
       type: Boolean,
@@ -70,15 +69,6 @@ export default {
         {}
       )
     },
-    // rawSlides() {
-    //   this.$data._rerender // re-calculation dependency.
-
-    //   return prepareSlides(
-    //     this._self._c || this.$createElement,
-    //     this.$slots.default,
-    //     { normalize: false }
-    //   )
-    // },
     activeSlide() {
       return this.slides[this.activeIndex]
     },

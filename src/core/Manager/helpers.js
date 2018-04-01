@@ -147,7 +147,7 @@ export function prepareSlides(h, vnodes) {
         }
       })
 
-      const transition = {}
+      const transition = { component: 'transition-noop' }
 
       if (attrs.transition) {
         transition.component = 'transition-' + attrs.transition

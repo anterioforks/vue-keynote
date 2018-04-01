@@ -9,7 +9,6 @@ const themes = {}
 const Keynote = {
   install(context) {
     Vue = context
-    Keynote.use(DefaultTheme)
 
     Vue.mixin({
       created() {
@@ -42,6 +41,11 @@ const Keynote = {
   }
 }
 
+export default Keynote
+
 if (typeof window !== 'undefined' && 'Vue' in window) {
+  console.log('INSTALL KEYNOTE')
   window.Vue.use(Keynote)
+  console.log('INSTALL DEFAULT KEYNOTE THEME')
+  Keynote.use(DefaultTheme)
 }
